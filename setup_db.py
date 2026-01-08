@@ -5,7 +5,6 @@ from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 
-# Load credentials
 load_dotenv()
 
 DB_USER = os.getenv('DB_USER')
@@ -40,7 +39,6 @@ def init_db():
     create_database()
     engine = get_engine()
     
-    # 1. DEFINE SCHEMA
     schema_sql = """
     DROP TABLE IF EXISTS order_items;
     DROP TABLE IF EXISTS orders;
@@ -60,12 +58,9 @@ def init_db():
         conn.commit()
     print("✅ Schema Created successfully.")
 
-    # 2. SEED DATA
-    # Regions
     regions = ['North', 'South', 'East', 'West']
     pd.DataFrame({'region_name': regions}).to_sql('regions', engine, if_exists='append', index=False)
 
-    # Products
     products = [
         ('Enterprise Laptop', 'Electronics', 1200), ('Ergonomic Chair', 'Furniture', 300),
         ('Wireless Mouse', 'Electronics', 25), ('Standing Desk', 'Furniture', 500),
@@ -73,18 +68,17 @@ def init_db():
     ]
     pd.DataFrame(products, columns=['product_name', 'category', 'price']).to_sql('products', engine, if_exists='append', index=False)
 
-    # Customers & Orders
     print("⏳ Generating 200 mock orders...")
     with engine.connect() as conn:
         r_ids = [r[0] for r in conn.execute(text("SELECT region_id FROM regions")).fetchall()]
         p_ids = conn.execute(text("SELECT product_id, price FROM products")).fetchall()
         
-        # Customers
+
         for i in range(50):
             conn.execute(text(f"INSERT INTO customers (name, region_id, join_date) VALUES ('Customer {i}', {random.choice(r_ids)}, '2023-01-01')"))
         conn.commit()
         
-        # Orders
+
         c_ids = [c[0] for c in conn.execute(text("SELECT customer_id FROM customers")).fetchall()]
         
         for _ in range(200):

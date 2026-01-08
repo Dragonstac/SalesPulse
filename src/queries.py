@@ -1,5 +1,4 @@
-from database import run_query  # <--- "src." removed
-
+from database import run_query 
 class SalesAnalytics:
     @staticmethod
     def get_kpis(region=None):

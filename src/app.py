@@ -2,23 +2,18 @@ import streamlit as st
 import plotly.express as px
 from queries import SalesAnalytics
 
-# UI Config
 st.set_page_config(page_title="SalesPulse", layout="wide")
 st.markdown("<style>.block-container{padding-top:1rem;}</style>", unsafe_allow_html=True)
 
-# Header
 st.title("🔹 SalesPulse Analytics")
 st.markdown("---")
 
-# Sidebar
 region = st.sidebar.selectbox("Filter by Region", ["All Regions", "North", "South", "East", "West"])
 
-# Load Data
 kpis = SalesAnalytics.get_kpis(region)
 trend = SalesAnalytics.get_trend(region)
 prods = SalesAnalytics.get_top_products(region)
 
-# KPI Row
 if not kpis.empty and kpis.iloc[0]['revenue'] is not None:
     c1, c2, c3 = st.columns(3)
     c1.metric("Total Revenue", f"${kpis.iloc[0]['revenue']:,.0f}")
@@ -29,7 +24,6 @@ else:
 
 st.markdown("---")
 
-# Charts Row
 col1, col2 = st.columns([2, 1])
 
 with col1:
